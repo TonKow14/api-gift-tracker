@@ -1,6 +1,13 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
+export class UploadFileDto {
+  @ApiProperty({
+    type: String,
+    format: 'binary',
+  })
+  file: any;
+}
 export class UserDto {
   @ApiProperty({ description: 'ชื่อผู้ใช้', example: 'tonkow' })
   user_name: string;

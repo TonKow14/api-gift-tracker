@@ -8,7 +8,7 @@ export class BaseResponseDto<T> {
     success: boolean;
 
     @ApiProperty({ description: 'รหัสสถานะ', default: 200 })
-    status: number;
+    statusCode: number;
 
     @ApiProperty({ description: 'คำอธิบาย', default: 'สำเร็จ' })
     message: string;
@@ -24,8 +24,8 @@ const responseSuccess = (
 ): BaseResponseDto<any> => {
     const response = new BaseResponseDto();
     response.success = true;
-    response.status = code || 200;
-    response.message = message || getReasonPhrase(response.status);
+    response.statusCode = code || 200;
+    response.message = message || getReasonPhrase(response.statusCode);
     response.data = data;
     return response;
 };

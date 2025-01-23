@@ -1,4 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
 import { pickBy, Dictionary, isString, mapKeys } from 'lodash';
 
 export interface PaginateQuery {
@@ -11,6 +12,14 @@ export interface PaginateQuery {
   filter?: { [column: string]: string | string[] };
   select?: string[];
   path: string;
+}
+
+export class PaignateApiPropertyQuery {
+  @ApiProperty({ required: false })
+  page?: number;
+
+  @ApiProperty({ required: false })
+  limit?: number;
 }
 
 const singleSplit = (param: string, res: any[]) => res.push(param);

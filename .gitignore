@@ -61,4 +61,5 @@ dist.zip
 yarn.lock
 bun.lockb
 package-lock.json
-/public
+public/**
+!public/*.gitignore

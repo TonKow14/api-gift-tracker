@@ -1,5 +1,5 @@
 export enum CommonStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  DELETED = 'deleted',
+  ACTIVE = 'Y',
+  INACTIVE = 'W',
+  DELETED = 'N',
 }

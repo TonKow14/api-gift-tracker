@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -41,11 +42,21 @@ export class AuthService {
   async getAuthenticatedUser(loginDto: LoginDto): Promise<User> {
     const user = await this.connection
       .getRepository(User)
-      .findOneBy({ user_email: loginDto.email, status: CommonStatus.ACTIVE });
+      .createQueryBuilder('u')
+      .select([
+        'u.id_user',
+        'u.user_name',
+        'u.user_email',
+        'u.password',
+        'u.status',
+      ])
+      .where('u.status = :ac', { ac: CommonStatus.ACTIVE })
+      .andWhere('u.user_email = :ema', { ema: loginDto?.email })
+      .getOne();
 
-    if (!user) throw new NotFoundException();
+    if (!user) throw new NotFoundException('ไม่พบผู้ใข้');
 
-    await this.verifyPassword(loginDto.password, user.password);
+    await this.verifyPassword(loginDto?.password, user?.password);
 
     return user;
   }
@@ -116,23 +127,29 @@ export class AuthService {
   //   }
 
   async logout(accessToken: string, user: User): Promise<boolean> {
-    const activeSession = await this.connection
-      .getRepository(AuthLog)
-      .findOneBy({
-        id_user: user.id_user,
-        access_token: accessToken,
-        status: CommonStatus.ACTIVE,
-      });
+    try {
+      const activeSession = await this.connection
+        .getRepository(AuthLog)
+        .findOneBy({
+          id_user: user.id_user,
+          access_token: accessToken,
+          status: CommonStatus.ACTIVE,
+        });
 
-    if (activeSession) {
-      activeSession.status = CommonStatus.DELETED;
+      if (activeSession) {
+        activeSession.status = CommonStatus.DELETED;
 
-      await this.connection.getRepository(AuthLog).save(activeSession);
+        await this.connection.getRepository(AuthLog).save(activeSession);
 
-      return true;
+        return true;
+      }
+
+      throw new NotFoundException(ErrorMessage.Auth.WRONG_TOKEN);
+    } catch (err: unknown) {
+      console.log(err);
+      if (err) throw err;
+      throw new InternalServerErrorException();
     }
-
-    throw new NotFoundException(ErrorMessage.Auth.WRONG_TOKEN);
   }
 
   async getUserProfile(user: User): Promise<User> {

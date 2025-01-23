@@ -32,6 +32,13 @@ export class UserService {
     return hashSync(password, genSaltSync(12));
   }
 
+  async findOne(id_user: number) {
+    const res = await this.connection
+      .getRepository(User)
+      .findOneBy({ id_user: id_user });
+    return responseSuccess(res);
+  }
+
   async create(body: UserDto): Promise<object> {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
@@ -87,7 +94,7 @@ export class UserService {
     }
   }
 
-  async update(id_user: number, body: UserDto): Promise<object> {
+  async update(id_user: number, body: UserDto, user: User): Promise<object> {
     const queryRunner = this.connection.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -207,5 +214,22 @@ export class UserService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async remove(id_user: number) {
+    const exits = await this.connection
+      .getRepository(User)
+      .findOneBy({ id_user: id_user, status: CommonStatus.ACTIVE });
+    if (!exits) {
+      throw new NotFoundException();
+    }
+
+    await this.connection
+      .getRepository(User)
+      .update(
+        { id_user: id_user },
+        { status: CommonStatus.DELETED, modified_date: new Date() },
+      );
+    return responseSuccess();
   }
 }

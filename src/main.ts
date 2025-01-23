@@ -10,10 +10,12 @@ import { json, urlencoded } from 'express';
 import { Settings } from 'luxon';
 import * as useragent from 'express-useragent';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
+    // logger: false,
   });
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
@@ -39,7 +41,10 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+  const theme = new SwaggerTheme();
   SwaggerModule.setup('api', app, document, {
+    explorer: true,
+    customCss: theme.getBuffer(SwaggerThemeNameEnum.ONE_DARK),
     swaggerOptions: {
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',

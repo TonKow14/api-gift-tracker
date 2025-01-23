@@ -66,13 +66,9 @@ export class AuthController {
     description: getReasonPhrase(StatusCodes.OK),
     type: TokenDto,
   })
-  @UseGuards(LocalAuthenticationGuard, RequestLogGuard)
+  @UseGuards(LocalAuthenticationGuard)
   @Post('login')
-  async logIn(
-    @AuthUser() user: User,
-    @Res() res: Response,
-    @Body() body: LoginDto,
-  ) {
+  async logIn(@AuthUser() user: User, @Res() res: Response) {
     const tokens = await this.authService.getJwtTokens(user);
     // if (tokens) {
     //     data_log.id_user = user.id_user
@@ -82,30 +78,30 @@ export class AuthController {
     return res.status(StatusCodes.OK).send(responseSuccess(tokens));
   }
 
-//   @ApiOperation({
-//     description: 'ใช้ refresh token เพื่อขอ access token ใหม่',
-//     summary: 'user, authlog',
-//   })
-//   @ApiBody({ type: RefreshDto })
-//   @ApiOkResponseGeneric({
-//     description: getReasonPhrase(StatusCodes.OK),
-//     type: TokenDto,
-//   })
-//   @UseGuards(JwtRefreshGuard, RequestLogGuard)
-//   @ApiBearerAuth('access-token')
-//   @Post('refresh')
-//   async refresh(
-//     @AuthUser() user: User,
-//     @Res() res: Response,
-//     @Body() body: RefreshDto,
-//   ) {
-//     const tokens = await this.authService.tryRefreshTokens(
-//       body.refreshToken,
-//       user,
-//     );
+  //   @ApiOperation({
+  //     description: 'ใช้ refresh token เพื่อขอ access token ใหม่',
+  //     summary: 'user, authlog',
+  //   })
+  //   @ApiBody({ type: RefreshDto })
+  //   @ApiOkResponseGeneric({
+  //     description: getReasonPhrase(StatusCodes.OK),
+  //     type: TokenDto,
+  //   })
+  //   @UseGuards(JwtRefreshGuard, RequestLogGuard)
+  //   @ApiBearerAuth('access-token')
+  //   @Post('refresh')
+  //   async refresh(
+  //     @AuthUser() user: User,
+  //     @Res() res: Response,
+  //     @Body() body: RefreshDto,
+  //   ) {
+  //     const tokens = await this.authService.tryRefreshTokens(
+  //       body.refreshToken,
+  //       user,
+  //     );
 
-//     return res.status(StatusCodes.OK).send(responseSuccess(tokens));
-//   }
+  //     return res.status(StatusCodes.OK).send(responseSuccess(tokens));
+  //   }
 
   @ApiOperation({ description: 'ออกจากระบบ', summary: 'user, authlog' })
   @ApiOkResponseGeneric({
@@ -164,23 +160,23 @@ export class AuthController {
     return res.status(StatusCodes.OK).send(responseSuccess(otp));
   }
 
-//   @ApiOperation({ description: 'ตรวจสอบรหัส OTP', summary: 'user' })
-//   @ApiBody({ type: OTPDto })
-//   @ApiOkResponseGeneric({
-//     description: getReasonPhrase(StatusCodes.OK),
-//     type: TokenDto,
-//   })
-//   @UseGuards(RequestLogGuard)
-//   @Post('validate-otp')
-//   async validateOtp(@Res() res: Response, @Body() body: OTPDto) {
-//     const tokens = await this.authService.validateOtp(
-//       body.email,
-//       body.otp,
-//       body.ref,
-//     );
+  //   @ApiOperation({ description: 'ตรวจสอบรหัส OTP', summary: 'user' })
+  //   @ApiBody({ type: OTPDto })
+  //   @ApiOkResponseGeneric({
+  //     description: getReasonPhrase(StatusCodes.OK),
+  //     type: TokenDto,
+  //   })
+  //   @UseGuards(RequestLogGuard)
+  //   @Post('validate-otp')
+  //   async validateOtp(@Res() res: Response, @Body() body: OTPDto) {
+  //     const tokens = await this.authService.validateOtp(
+  //       body.email,
+  //       body.otp,
+  //       body.ref,
+  //     );
 
-//     return res.status(StatusCodes.OK).send(responseSuccess(tokens));
-//   }
+  //     return res.status(StatusCodes.OK).send(responseSuccess(tokens));
+  //   }
 
   @ApiOperation({ description: 'ตั้งรหัสผ่านใหม่', summary: 'user' })
   @ApiBody({ type: UpdatePasswordDto })
